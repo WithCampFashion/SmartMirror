@@ -276,6 +276,26 @@ $(document).ready(function(){
             '패션': function(){
                 responsiveVoice.speak("당신의 패션을 책임 질게요", "Korean Female");
                 $('#IMG').load("test.html");
+            },
+            '다음': function(){
+                responsiveVoice.speak("이 옷은 어떠신가요?", "Korean Female");
+                $.ajax("{% url "next" %}", {
+                    method: 'GET',
+                    data:{
+                        'query': "red"
+                    },
+                    dataType : 'html',
+                    beforeSend: function(){
+                    },
+                    success: function (data) {
+                        $('#IMG').html(data);
+                    },
+                    complete:function(xhr, settings) {
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr);
+                    }
+                });
             }
         };
         annyang.addCommands(commands);

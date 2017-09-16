@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', root, name='root'),
     url(r'^test.html/$', views.test, name='test'),
+    url(r'^next/$', views.next, name='next'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
