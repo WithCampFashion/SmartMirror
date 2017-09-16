@@ -1,0 +1,321 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <!--  -->
+<head>
+    <!-- Character set을 UTF-8로 설정 -->
+    <meta charset="utf-8">
+
+    <!-- 웹페이지 제목을 DKU MIRROR로 설정 -->
+    <title>DKU MIRROR</title>
+
+    <!-- favicon, stylesheet, font 적용 -->
+{#    <link rel="shortcut icon" href="favicon.ico" />#}
+    <link rel="stylesheet" href="../static/css/main.css" />
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800,700' rel='stylesheet' type='text/css' />
+    <link rel="canonical" href="http://www.alessioatzeni.com/wp-content/tutorials/jquery/CSS3-digital-clock/index.html" />
+    <link rel="stylesheet" href="../static/css/main.css">
+</head>
+
+<!-- body 태그 시작 -->
+<body bg-color="black" ng-controller="MirrorCtrl as commands">
+    <!-- div class로 Top, Container, Bottom 영역 분할 -->
+    <div class="top">
+        <!-- Top left에 디지털 시계 배치, div id를 사용하여 시계 생성 -->
+        <div class="top-left">
+            <div class="clock">
+                <div id="Date"></div>
+
+                <ul>
+                    <li id="hours"> </li>
+                    <li id="point">:</li>
+                    <li id="min"> </li>
+                    <li id="point">:</li>
+                    <li id="sec"> </li>
+                </ul>
+
+                </div>
+            </div>
+            <!-- Top right에 날씨정보 출력 (iframe tag활용) -->
+            <div class="top-right">
+                <iframe id="forecast_embed" type="text/html" frameborder="0" height="245" width="100%" src="http://forecast.io/embed/#lat=37.3215984&lon=127.1245616&name=Yongin City&color=#ffffff&units=si"> </iframe>
+            </div>
+    <!-- Top div closing -->
+    </div>
+
+    <!-- container div 시작 (웹페이지 중간과 하단 컨텐츠 배치) -->
+    <div class="container">
+
+        <div class="middle-center">
+                <div id="map" style="width:100%;height:1200px;display:none"></div>
+			    <div id="menu">
+                    <div class="list_1">
+                    	<h2>사용 가능한 질문</h2>
+                        <dl>
+                        <dt>너는 누구니</dt>
+                        <dd>스마트미러 정보를 보여줍니다.</dd>
+                        <p></p>
+                        <dt>메뉴</dt>
+                        <dd>사용 가능한 질문을 보여줍니다.</dd>
+                        <p></p>
+                        <dt>홈으로</dt>
+                        <dd>홈 스크린으로 돌아갑니다.</dd>
+                        <p></p>
+                        <dt>공지사항</dt>
+                        <dd>포털 공지사항을 보여줍니다.</dd>
+                        <p></p>
+                        <dt>학사공지</dt>
+                        <dd>포털 학사공시사항을 보여줍니다.</dd>
+                        <p></p>
+                        <dt>센터 공지사항</dt>
+                        <dd>공학교육 혁신센터 공지사항을 보여줍니다.</dd>
+                        <p></p>
+                        <dt>열람실</dt>
+                        <dd>단국대 죽전캠퍼스 열람실 좌석현황을 보여줍니다.</dd>
+                        <p></p>
+                        <dt>"__" 열람실 </dt>
+                        <dd>단국대 죽전캠퍼스 "__" 열람실 좌석현황을 보여줍니다.</dd>
+                        <p></p>
+                        <dt>학사일정</dt>
+                        <dd>단국대 죽전캠퍼스 학사일정을 보여줍니다.</dd>
+                        <p></p>
+                        </dl>
+                    </div>
+                    <table align="center" style="margin-top:50px">
+                                <tr>
+                                    <td>
+                                        <input id = "hs_button" type="button" value = "학사공지" onclick="ShowScholar()">
+                                    </td>
+                                    <td>
+                                        <input id = "portal_button"type="button" value = "포털공지" onclick="ShowNotice()">
+                                    </td>
+                                    <td>
+                                        <input id="library_button" type="button" value = "열람실" onclick="ShowLibrary()">
+                                    </td>
+                                    <td>
+                                        <input id="center_button" type="button" value = "센터공지" onclick="ShowMMap()">
+                                    </td>
+                                    <td>
+                                        <input id="calendar_button" type="button" value = "학사일정" onclick = "ShowHS()">
+                                    </td>
+                                </tr>
+                            </table>
+			    </div>
+
+                <div id="IMG" style="text_align:center;float:inherit;">
+                <img width="598px" height="368px" align="middle" text_align="center" position="absolute" src="../static/img/logo.png">
+                </div>
+                <div id="list" style="text_align:center;float:inherit;margin-top:30px;color:#ffffff;font-size:15px"> '메뉴' 라고 말해보세요. </div>
+        </div>
+        <div id = "menu_touch" style="margin-top:40px">
+          <table>
+            <tr>
+              <td>
+                <input id = "menu_button" type="button" value = "" onclick="ShowMenu()">
+              </td>
+              <td>
+                <input id = "home_button" type="button" value = "" onclick="Home()">
+              </td>
+            </tr>
+          </table>
+
+        </div>
+        <div class="bottom" style="float:left">
+            <p>Made By 09Room</p>
+        </div>
+    </div>
+</body>
+
+</html>
+
+
+
+
+<!-- Script Sources -->
+
+<script src="http://code.responsivevoice.org/responsivevoice.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+// Create two variable with the names of the months and days in an array
+var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+var dayNames= ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+
+// Create a newDate() object
+var newDate = new Date();
+// Extract the current date from Date object
+newDate.setDate(newDate.getDate());
+// Output the day, date, month and year
+$('#Date').html(dayNames[newDate.getDay()] + " " + newDate.getDate() + ' ' + monthNames[newDate.getMonth()] + ' ' + newDate.getFullYear());
+
+setInterval( function() {
+	// Create a newDate() object and extract the seconds of the current time on the visitor's
+	var seconds = new Date().getSeconds();
+	// Add a leading zero to seconds value
+	$("#sec").html(( seconds < 10 ? "0" : "" ) + seconds);
+	},1000);
+
+setInterval( function() {
+	// Create a newDate() object and extract the minutes of the current time on the visitor's
+	var minutes = new Date().getMinutes();
+	// Add a leading zero to the minutes value
+	$("#min").html(( minutes < 10 ? "0" : "" ) + minutes);
+    },1000);
+
+setInterval( function() {
+	// Create a newDate() object and extract the hours of the current time on the visitor's
+	var hours = new Date().getHours();
+	// Add a leading zero to the hours value
+	$("#hours").html(( hours < 10 ? "0" : "" ) + hours);
+    }, 1000);
+
+});
+</script>
+
+<!-- Voice Command -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="../static/js/anyang.js"></script>
+
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.4.0/annyang.min.js"></script>-->
+
+<script type="text/javascript">
+function Home(){
+       responsiveVoice.speak("홈으로 이동합니다", "Korean Female");
+
+       $("#IMG").show(1000);
+       $("#list").show(1000);
+
+       $("#Library").hide(1000);
+       $("#Library_1").hide(1000);
+       $("#Library_2").hide(1000);
+       $("#Library_3").hide(1000);
+       $("#Library_4").hide(1000);
+       $("#Library_5").hide(1000);
+       $("#Library_6").hide(1000);
+       $("#Library_DH").hide(1000);
+       $("#Library_BD").hide(1000);
+       $("#menu").hide(1000);
+       $("#map").hide(1000);
+       $("#MMap").hide(1000);
+       $("#Scholar").hide(1000);
+       $("#Notice").hide(1000);
+       $("#Calendar").hide(1000);
+
+    }
+
+   function ShowMap(){
+
+        $("#map").show(1000);
+        $("#Library_1").hide(1000);
+       $("#Library_2").hide(1000);
+       $("#Library_3").hide(1000);
+       $("#Library_4").hide(1000);
+       $("#Library_5").hide(1000);
+       $("#Library_6").hide(1000);
+       $("#Library_DH").hide(1000);
+       $("#Library_BD").hide(1000);
+       $("#MMap").hide(1000);
+        $("#menu").hide(1000);
+        $("#Scholar").hide(1000);
+        $("#Library").hide(1000);
+        $("#Notice").hide(1000);
+        $("#IMG").hide(1000);
+        $("#Calendar").hide(1000);
+    }
+    function ShowMenu(){
+        responsiveVoice.speak("사용 가능한 메뉴입니다", "Korean Female");
+
+        $("#menu").show(1000);
+        $("#list").hide(1000);
+        $("#map").hide(1000);
+        $("#MMap").hide(1000);
+        $("#Scholar").hide(1000);
+        $("#Library").hide(1000);
+        $("#Library_1").hide(1000);
+       $("#Library_2").hide(1000);
+       $("#Library_3").hide(1000);
+       $("#Library_4").hide(1000);
+       $("#Library_5").hide(1000);
+       $("#Library_6").hide(1000);
+       $("#Library_DH").hide(1000);
+       $("#Library_BD").hide(1000);
+        $("#Notice").hide(1000);
+        $("#IMG").hide(1000);
+        $("#Calendar").hide(1000);
+
+    }
+
+   function HideScholar(){
+       $("#Scholar").hide(1000);
+   }
+   function HideNotice(){
+       $("#Notice").hide(1000);
+   }
+   function HideMap(){
+        $("#map").hide(1000);
+    }
+    function HideMenu(){
+        $("#menu").hide(1000);
+    }
+    function HideLibrary(){
+        $("#Library").hide(1000);
+    }
+</script>
+
+<script>
+$(document).ready(function(){
+
+    if (annyang){
+        var commands = {
+            '너는 누구니':function(){
+                responsiveVoice.speak("저는 상호반응형 스마트 미러입니다", "Korean Female");
+            },
+            '메뉴' : function(){
+                Home();
+            },
+            '패션': function(){
+                responsiveVoice.speak("당신의 패션을 책임 질게요", "Korean Female");
+                $('#IMG').load("test.html");
+            }
+        };
+        annyang.addCommands(commands);
+        annyang.addCallback('resultMatch',function(userSaid)
+        {
+            $(".bottom").append(userSaid);
+            console.log("user said",userSaid);
+        });
+        annyang.removeCallback();
+        annyang.setLanguage('ko');
+        annyang.start();
+    }
+    function Home(){
+       responsiveVoice.speak("홈으로 이동합니다", "Korean Female");
+       $("#IMG").show(1000);
+       $("#list").show(1000);
+    }
+
+   function ShowMMap(){
+       responsiveVoice.speak("공학교육 혁신센터 공지사항으로 이동합니다", "Korean Female");
+       $("#IMG").hide(1000);
+       document.getElementById('mmap').src += '';
+
+   }
+   function HideScholar(){
+       $("#Scholar").hide(1000);
+   }
+   function HideNotice(){
+       $("#Notice").hide(1000);
+   }
+   function HideMap(){
+        $("#map").hide(1000);
+    }
+    function HideMenu(){
+        $("#menu").hide(1000);
+    }
+    function HideLibrary(){
+        $("#Library").hide(1000);
+    }
+
+});
+</script>
+
