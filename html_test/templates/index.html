@@ -102,8 +102,13 @@
                             </table>
 			    </div>
 
-                <div id="IMG" style="text_align:center;float:inherit;">
-                <img width="598px" height="368px" align="middle" text_align="center" position="absolute" src="../static/img/logo.png">
+                <div id="IMG" style="text_align:center;float:inherit;"
+         	<p>      
+         	<p>      
+         	<p>      
+         	<p>      
+         	<p>      
+	 	<img width="598px" height="598px" align="middle" text_align="center" position="absolute" src="../static/img/logo.png">
                 </div>
                 <div id="list" style="text_align:center;float:inherit;margin-top:30px;color:#ffffff;font-size:15px"> '메뉴' 라고 말해보세요. </div>
         </div>
@@ -275,7 +280,27 @@ $(document).ready(function(){
             },
             '패션': function(){
                 responsiveVoice.speak("당신의 패션을 책임 질게요", "Korean Female");
-                $('#IMG').load("test.html");
+                $('.middle-center').load("test.html");
+            },
+	   '': function(){
+                responsiveVoice.speak("ÀÌ ¿ÊÀº ¾î¶°½Å°¡¿ä?", "Korean Female");
+                $.ajax("{% url "next" %}", {
+                    method: 'GET',
+                    data:{
+                        'query': "red"
+                    },
+                    dataType : 'html',
+                    beforeSend: function(){
+                    },
+                    success: function (data) {
+                        $('#IMG').html(data);
+                    },
+                    complete:function(xhr, settings) {
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr);
+                    }
+                });
             }
         };
         annyang.addCommands(commands);
