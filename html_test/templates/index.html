@@ -282,13 +282,13 @@
                     responsiveVoice.speak("당신의 패션을 책임 질게요", "Korean Female");
                     $('#IMG').load("test.html");
                 },
-                '다음': function(){
+                '다음 *tag': function(tag){
                     responsiveVoice.speak("이 옷은 어떠신가요?", "Korean Female");
 
                     $.ajax("{% url "next" %}", {
                         method: 'GET',
                         data:{
-                            'query': "red"
+                            'query': tag
                         },
                         dataType : 'html',
                         beforeSend: function(){
