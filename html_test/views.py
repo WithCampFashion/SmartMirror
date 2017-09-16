@@ -16,8 +16,4 @@ def next(request):
     print(img_path)
     return render_to_response('next.html', {
         'img_path': img_path,
-<<<<<<< HEAD
     })
-=======
-    })s
->>>>>>> cc9c737b166ad12801af6659ec18d9f0cbe8b805
